@@ -14,88 +14,107 @@ All our SDKs including C and Python SDKs are based on the C++ SDK, for complete 
 
 ## Getting Started
 
-To use the GetGud SDK, you will need to include the required header file:
+To use our SDK in python you will have to build it for your system first. In order to do this just follow this simple steps.
 
-```cpp
-#include "../include/GetGudSdk.h"
+1. If you do not have Python environment and start from scratch you can install Miniconda.
+
+```bash
+wget https://repo.anaconda.com/miniconda/Miniconda3-py39_23.3.1-0-Linux-x86_64.sh
+bash Miniconda3-py39_23.3.1-0-Linux-x86_64.sh
+source miniconda3/bin/activate
+conda create -n getgudsdk python=3.9 anaconda
+conda activate getgudsdk
+pip install -r requirements.txt
 ```
 
-First things first, you need to Init SDK in your code. To do this type:
+For windows to install Miniconda visit [this link](https://docs.conda.io/en/latest/miniconda.html)
+Now let's build the SDK!
 
-```cpp
-GetGudSdk::Init();
+2. First download the latest Windows/Linux library build files from our S3 bucket
+
+[Linux latest build](https://getgud-sdk-files.s3.amazonaws.com/0.1.0-Alpha-230531-b3ec5a8/Linux/libGetGudSdk.so)
+[Windows latest build](https://getgud-sdk-files.s3.amazonaws.com/0.1.0-Alpha-230531-b3ec5a8/Linux/libGetGudSdk.so)
+
+3. Run the command in your terminal to build the library
+```bash
+invoke build-sdk
+export LD_LIBRARY_PATH=$PWD/python-getgud-sdk:$LD_LIBRARY_PATH
 ```
 
-This will load the default Config and set up SDK for working. Note that to customize how SDK works you will need to use your own `config.json` file.
+4. Do not forget to set `LOG_FILE_PATH` and `CONFIG_PATH` environment variables to use SDK!
 
-Next, you need to start a Game, you can do it like this:
+We have build the SDK an it is ready for use!
 
-```cpp
-std::string gameGuid = GetGudSdk::StartGame(
-  1, //titleId
-  "6a3d1732-8f72-12eb-bdef-56d89392f384", //privateKey
-  "us-west-1", // serverGuid
-  "deathmatch" // gameMode
-);
+First, you will need to import `GetGudSdk` from the Python wrapper:
+
+```python
+from getgudsdk_wrapper import GetGudSdk
+import time
+import random
 ```
 
-Once the Game is started you get the Game guid and you can start the Match using your gameGuid.
+Initialize the SDK:
 
-```cpp
-std::string matchGuid = GetGudSdk::StartMatch(
-  gameGuid, 
-  "deathmatch", // matchMode
-  "de-dust" // mapName
-);
+```python
+sdk = GetGudSdk()
 ```
 
-When you start the Match you get its matchGuid. Now you can push Action, Chat Data, and Reports to the Match. Let's push a Spawn Action to this match.
+Next, start a Game:
 
-```cpp
-bool isActionSent = GetGudSdk::SendSpawnAction(
-          matchGuid,
-          1684059337532,  // actionTimeEpoch
-          "player_1", // playerGuid
-          "ttr", // characterGuid
-          GetGudSdk::PositionF{1, 2, 3}, // position
-          GetGudSdk::RotationF{10, 20} // rotation
-);
+```python
+game_guid = sdk.start_game(1, "private_key", "server_guid", "game_mode")
 ```
 
-Let's also create one more match and push a report.
+Once the Game has started, you can start a Match using `game_guid`:
 
-```cpp
-std::string matchGuid = GetGudSdk::StartMatch(
-  gameGuid, 
-  "deathmatch", // matchMode
-  "de-mirage" // mapName
-);
-
-GetGudSdk::ReportInfo reportInfo;
-reportInfo.MatchGuid = "6a3d1732-8f72-12eb-bdef-56d89392f384";
-reportInfo.ReportedTimeEpoch = 1684059337532;
-reportInfo.ReporterName = "player1";
-reportInfo.ReporterSubType = 0;
-reportInfo.ReporterType = 0;
-reportInfo.SuggestedToxicityScore = 100;
-reportInfo.SuspectedPlayerGuid = "player1";
-reportInfo.TbSubType = 0;
-reportInfo.TbTimeEpoch = 1684059337532;
-reportInfo.TbType = 0;
-GetGudSdk::SendInMatchReport(reportInfo);
-
+```python
+match_guid = sdk.start_match(game_guid, "match_mode", "map_name")
 ```
 
-Great, it is time to stop the Game now. To do it just specify what Game you need to stop, all the Matches inside this Game will be stopped automatically.
+Now you can push Actions, Chat Data, and Reports to the Match. Let's push a Spawn Action to this match:
 
-```cpp
-bool gameEnded = GetGudSdk::MarkEndGame(gameGuid);
+```python
+action_time_epoch = int(time.time() * 1000)
+player_guid = "player_1"
+character_guid = "ttr"
+position = (1, 2, 3)
+rotation = (10, 20, 30)
+team_id = 1
+initial_health = 100
+
+sdk.send_spawn_action(match_guid, action_time_epoch, player_guid, character_guid, team_id, initial_health, position, rotation)
 ```
 
-In the end, just dispose SDK when you do not need it anymore.
+Let's also create one more match and push a report:
 
-```cpp
-GetGudSdk::Dispose();
+```python
+match_guid = sdk.start_match(game_guid, "deathmatch", "de-mirage")
+
+reporter_name = "player1"
+reporter_type = 0
+reporter_sub_type = 0
+suspected_player_guid = "player1"
+tb_type = 0
+tb_sub_type = 0
+tb_time_epoch = int(time.time() * 1000)
+suggested_toxicity_score = 100
+reported_time_epoch = int(time.time() * 1000)
+
+sdk.send_in_match_report(match_guid, reporter_name, reporter_type, reporter_sub_type, 
+                         suspected_player_guid, tb_type, tb_sub_type, 
+                         tb_time_epoch, suggested_toxicity_score, reported_time_epoch)
+```
+
+It's time to stop the Game now. To do this, just specify which Game you need to stop, and all the Matches inside this Game will be stopped automatically:
+
+```python
+sdk.mark_end_game(game_guid)
+```
+
+Finally, dispose of the SDK when you no longer need it:
+
+```python
+sdk.dispose()
 ```
 
 ## Configuration
