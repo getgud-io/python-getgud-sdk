@@ -6,11 +6,16 @@ Getgud Python SDK allows you to integrate your game with the GetGud platform. On
 All our SDKs including C and Python SDKs are based on the C++ SDK, for complete documentation you can visit our [C++ SDK page](https://github.com/getgud-io/cpp-getgud-sdk)
 
 ## Table of Contents
+- [Downloads](https://github.com/getgud-io/python-getgud-sdk#downloads)
 - [Getting Started](https://github.com/getgud-io/python-getgud-sdk#getting-started)
 - [Configuration](https://github.com/getgud-io/python-getgud-sdk#configuration)
     - [Description of the Config fields](https://github.com/getgud-io/python-getgud-sdk#description-of-the-config-fields)
 - [Logging](https://github.com/getgud-io/python-getgud-sdk#logging)
 
+## Downloads
+
+[Linux latest build](https://getgud-sdk-files.s3.amazonaws.com/0.1.0-Alpha-230531-b3ec5a8/Linux/libGetGudSdk.so) <br>
+[Windows latest build](https://getgud-sdk-files.s3.amazonaws.com/0.1.0-Alpha-230531-b3ec5a8/Linux/libGetGudSdk.so)
 
 ## Getting Started
 
@@ -31,9 +36,6 @@ For windows to install Miniconda visit [this link](https://docs.conda.io/en/late
 Now let's build the SDK!
 
 2. First download the latest Windows/Linux library build files from our S3 bucket
-
-[Linux latest build](https://getgud-sdk-files.s3.amazonaws.com/0.1.0-Alpha-230531-b3ec5a8/Linux/libGetGudSdk.so)
-[Windows latest build](https://getgud-sdk-files.s3.amazonaws.com/0.1.0-Alpha-230531-b3ec5a8/Linux/libGetGudSdk.so)
 
 3. Run the command in your terminal to build the library
 ```bash
