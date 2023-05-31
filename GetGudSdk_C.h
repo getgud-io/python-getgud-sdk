@@ -73,10 +73,9 @@ struct ReportInfo {
   long long reportedTimeEpoch;
 };
 
-
 void init();
 int StartGame(struct StartGameInfo gameInfo, char* gameGuidOut);
-int StartMatch(struct StartMatchInfo matchInfo, char** matchGuidOut);
+int StartMatch(struct StartMatchInfo matchInfo, char* matchGuidOut);
 int MarkEndGame(char* gameGuid, int guidSize);
 int SendInMatchReport(struct ReportInfo reportInfo);
 int SendChatMessage(struct ChatMessageInfo messageInfo);

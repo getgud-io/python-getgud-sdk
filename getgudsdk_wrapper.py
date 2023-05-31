@@ -6,9 +6,9 @@ class GetGudSdk:
     def __init__(self):
         getgudsdk.init()
 
-    def start_game(self, private_key, server_guid, game_mode):
+    def start_game(self, title_id, private_key, server_guid, game_mode):
         game_info = ffi.new("struct StartGameInfo*")
-        game_info.titleId = 12345
+        game_info.titleId = title_id
 
         game_info.privateKey = ffi.new("char[]", private_key.encode('utf-8'))
         game_info.privateKeySize = len(private_key)
@@ -22,12 +22,12 @@ class GetGudSdk:
         game_guid = ffi.new("char[256]") 
         getgudsdk.StartGame(game_info[0], game_guid)
 
-        return ffi.string(game_guid)
+        return ffi.string(game_guid).decode('utf-8')
 
     def start_match(self, game_guid, match_mode, map_name):
         match_info = ffi.new("struct StartMatchInfo*")
 
-        match_info.gameGuid = ffi.new("char[]", game_guid)
+        match_info.gameGuid = ffi.new("char[]", game_guid.encode('utf-8'))
         match_info.gameGuidSize = len(game_guid)
 
         match_info.matchMode = ffi.new("char[]", match_mode.encode('utf-8'))
@@ -36,10 +36,10 @@ class GetGudSdk:
         match_info.mapName = ffi.new("char[]", map_name.encode('utf-8'))
         match_info.mapNameSize = len(map_name)
 
-        match_guid = ffi.new("char**")
+        match_guid = ffi.new("char[256]")
         result_code = getgudsdk.StartMatch(match_info[0], match_guid)
 
-        return ffi.string(match_guid[0])
+        return ffi.string(match_guid).decode('utf-8')
 
     def mark_end_game(self, game_guid):
         return getgudsdk.MarkEndGame(game_guid.encode('utf-8'), len(game_guid))
@@ -72,7 +72,7 @@ class GetGudSdk:
 
         return result_code
 
-    def send_chat_message(self, message_time_epoch, match_guid, player_guid, message):
+    def send_chat_message(self, match_guid, message_time_epoch, player_guid, message):
         message_info = ffi.new("struct ChatMessageInfo*")
 
         message_info.messageTimeEpoch = message_time_epoch
@@ -103,7 +103,7 @@ class GetGudSdk:
 
         return getgudsdk.SendAttackAction(base_data[0], weapon_guid_data, weapon_guid_size)
 
-    def send_damage_action(match_guid, action_time_epoch, player_guid,
+    def send_damage_action(self, match_guid, action_time_epoch, player_guid,
                         victim_player_guid, damage_done, weapon_guid):
         base_data = ffi.new("struct BaseActionData*")
         base_data.matchGuid = ffi.new("char[]", match_guid.encode('utf-8'))
@@ -121,7 +121,7 @@ class GetGudSdk:
                                         victim_player_guid_size, damage_done,
                                         weapon_guid_data, weapon_guid_size)
 
-    def send_heal_action(match_guid, action_time_epoch, player_guid, health_gained):
+    def send_heal_action(self, match_guid, action_time_epoch, player_guid, health_gained):
         base_data = ffi.new("struct BaseActionData*")
         base_data.matchGuid = ffi.new("char[]", match_guid.encode('utf-8'))
         base_data.matchGuidSize = len(match_guid)
@@ -131,7 +131,7 @@ class GetGudSdk:
 
         return getgudsdk.SendHealAction(base_data[0], health_gained)
 
-    def send_spawn_action(match_guid, action_time_epoch, player_guid,
+    def send_spawn_action(self, match_guid, action_time_epoch, player_guid,
                         character_guid, team_id, initial_health, position, rotation):
         base_data = ffi.new("struct BaseActionData*")
         base_data.matchGuid = ffi.new("char[]", match_guid.encode('utf-8'))
@@ -143,10 +143,13 @@ class GetGudSdk:
         character_guid_data = ffi.new("char[]", character_guid.encode('utf-8'))
         character_guid_size = len(character_guid)
 
-        return getgudsdk.SendSpawnAction(base_data[0], character_guid_data, character_guid_size,
-                                        team_id, initial_health, position[0], rotation[0])
+        position_struct = ffi.new("struct PositionF*", {"X": position[0], "Y": position[1], "Z": position[2]})
+        rotation_struct = ffi.new("struct RotationF*", {"Pitch": rotation[0], "Roll": rotation[1]})
 
-    def send_death_action(match_guid, action_time_epoch, player_guid):
+        return getgudsdk.SendSpawnAction(base_data[0], character_guid_data, character_guid_size,
+                                        team_id, initial_health, position_struct[0], rotation_struct[0])
+
+    def send_death_action(self, match_guid, action_time_epoch, player_guid):
         base_data = ffi.new("struct BaseActionData*")
         base_data.matchGuid = ffi.new("char[]", match_guid.encode('utf-8'))
         base_data.matchGuidSize = len(match_guid)
@@ -156,7 +159,7 @@ class GetGudSdk:
 
         return getgudsdk.SendDeathAction(base_data[0])
 
-    def send_position_action(match_guid, action_time_epoch, player_guid, position, rotation):
+    def send_position_action(self, match_guid, action_time_epoch, player_guid, position, rotation):
         base_data = ffi.new("struct BaseActionData*")
         base_data.matchGuid = ffi.new("char[]", match_guid.encode('utf-8'))
         base_data.matchGuidSize = len(match_guid)
@@ -164,7 +167,10 @@ class GetGudSdk:
         base_data.playerGuid = ffi.new("char[]", player_guid.encode('utf-8'))
         base_data.playerGuidSize = len(player_guid)
 
-        return getgudsdk.SendPositionAction(base_data[0], position[0], rotation[0])
+        position_struct = ffi.new("struct PositionF*", {"X": position[0], "Y": position[1], "Z": position[2]})
+        rotation_struct = ffi.new("struct RotationF*", {"Pitch": rotation[0], "Roll": rotation[1]})
+
+        return getgudsdk.SendPositionAction(base_data[0], position_struct[0], rotation_struct[0])
     
     def dispose(self):
         getgudsdk.dispose()
