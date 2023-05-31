@@ -40,7 +40,7 @@ Now let's build the SDK!
 3. Run the command in your terminal to build the library
 ```bash
 invoke build-sdk
-export LD_LIBRARY_PATH=$PWD/python-getgud-sdk:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/your/python-getgud-sdk
 ```
 
 4. Do not forget to set `LOG_FILE_PATH` and `CONFIG_PATH` environment variables to use SDK!
