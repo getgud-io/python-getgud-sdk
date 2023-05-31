@@ -119,7 +119,7 @@ sdk.dispose()
 
 ## Configuration
 
-The Config JSON file is loaded during `GetGudSdk::Init();` operation using `CONFIG_PATH` env variable.
+The Config JSON file is loaded during `init()` operation using `CONFIG_PATH` env variable.
 Example of configuration file `config.json`:
 
 ```json
