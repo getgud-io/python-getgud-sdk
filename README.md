@@ -43,6 +43,8 @@ invoke build-sdk
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/your/python-getgud-sdk
 ```
 
+On Windows add path to SDK .pyd file to PYTHONPATH
+
 4. Do not forget to set `LOG_FILE_PATH` and `CONFIG_PATH` environment variables to use SDK!
 
 We have build the SDK an it is ready for use!
