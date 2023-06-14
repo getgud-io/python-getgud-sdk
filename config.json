@@ -15,7 +15,7 @@
     "apiTimeoutMilliseconds": 600,
     "apiWaitTimeMilliseconds": 100,
     "packetMaxSizeInBytes": 2000000,
-    "actionsBufferMaxSizeInBytes": 10000000,
+    "actionsBufferMaxSizeInBytes": 20000000,
     "gameContainerMaxSizeInBytes": 50000000,
     "maxGames": 25,
     "maxMatchesPerGame": 50,

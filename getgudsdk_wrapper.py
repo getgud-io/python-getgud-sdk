@@ -194,7 +194,7 @@ class GetGudSdk:
         base_data.playerGuidSize = len(player_guid)
 
         position_struct = ffi.new("struct PositionF*", {"X": position[0], "Y": position[1], "Z": position[2]})
-        rotation_struct = ffi.new("struct RotationF*", {"Pitch": rotation[0], "Roll": rotation[1]})
+        rotation_struct = ffi.new("struct RotationF*", {"Yaw": rotation[0], "Pitch": rotation[1]})
 
         return getgudsdk.SendPositionAction(base_data[0], position_struct[0], rotation_struct[0])
     
