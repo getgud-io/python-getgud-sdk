@@ -146,6 +146,106 @@ Finally, dispose of the SDK when you no longer need it:
 sdk.dispose()
 ```
 
+## SDK Methods
+
+### GetGudSdk(start_game)
+
+Starts a new game and returns the `gameGuid`, a unique identifier for the game.
+
+Parameters:
+- `titleId` (int) - The title ID provided by GetGud.io.
+- `privateKey` (str) - The private key associated with the title ID.
+- `serverName` (str) - A unique name for your game server.
+- `gameMode` (str) - The mode of the game.
+
+Returns:
+- `gameGuid` (str) - The unique identifier for the game.
+
+### GetGudSdk(start_match)
+
+Starts a new match within a game and returns the `matchGuid`, a unique identifier for the match.
+
+Parameters:
+- `gameGuid` (str) - The unique identifier for the game.
+- `matchMode` (str) - The mode of the match.
+- `mapName` (str) - The name of the map for the match.
+
+Returns:
+- `matchGuid` (str) - The unique identifier for the match.
+
+### GetGudSdk(send_action)
+
+Sends an action to a match. Actions can include spawn, position, attack, damage, heal, and death.
+
+Parameters:
+- `matchGuid` (str) - The unique identifier for the match.
+- `action` (dict) - The action data.
+
+### GetGudSdk(mark_end_game)
+
+Marks a game as ended. This will close the game on the GetGud platform.
+
+Parameters:
+- `gameGuid` (str) - The unique identifier for the game.
+
+Returns:
+- `gameEnded` (bool) - Whether the game was successfully closed or not.
+
+### GetGudSdk(send_chat_message)
+
+Sends a chat message to a match.
+
+Parameters:
+- `matchGuid` (str) - The unique identifier for the match.
+- `messageData` (dict) - The chat message data.
+
+### GetGudSdk(send_in_match_report)
+
+Sends a report for a match.
+
+Parameters:
+- `matchGuid` (str) - The unique identifier for the match.
+- `reportInfo` (dict) - The report information.
+
+### GetGudSdk(update_players)
+
+Updates player information.
+
+Parameters:
+- `titleId` (int) - The title ID provided by GetGud.io (optional if using environment variables).
+- `privateKey` (str) - The private key associated with the title ID (optional if using environment variables).
+- `playerInfos` (list) - A list of player information dictionaries to update.
+
+Returns:
+- `playersUpdated` (bool) - Whether the player information was successfully updated or not.
+
+### GetGudSdk(dispose)
+
+Disposes of the SDK when no longer needed.
+
+### GetGudSdk.Init
+
+Initializes the SDK.
+
+### GetGudSdk.Dispose
+
+Disposes of the SDK.
+
+### GetGudSdk.SetLogLevel
+
+Sets the log level for the SDK.
+
+Parameters:
+- `logLevel` (str) - The desired log level.
+
+### GetGudSdk.GetLogLevel
+
+Gets the current log level of the SDK.
+
+Returns:
+- `logLevel` (str) - The current log level.
+
+
 ## Configuration
 
 The Config JSON file is loaded during initialization using the `CONFIG_PATH` environment variable.
