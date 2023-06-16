@@ -1,55 +1,80 @@
 # GetGud Python SDK
 
+## What Can You Do With GetGud's SDK
 
-Getgud Python SDK allows you to integrate your game with the GetGud platform. Once integrated, you will be able to stream your matches to Getgud's cloud, as well as to send reports and update player's data.
+Getgud Python SDK allows you to integrate your game with the GetGud platform. Once integrated, you will be able to:
+- Stream live Game data to GetGud's cloud (In-match Actions, In-match Reports, In-match Chat messages)
+- Send Reports about historical matches to GetGud.
+- Send (and update) player information to GetGud.
 
-All our SDKs including C and Python SDKs are based on the C++ SDK, for complete documentation you can visit our [C++ SDK page](https://github.com/getgud-io/cpp-getgud-sdk)
+## Prerequisites
 
-## Table of Contents
-- [Downloads](https://github.com/getgud-io/python-getgud-sdk#downloads)
-- [Getting Started](https://github.com/getgud-io/python-getgud-sdk#getting-started)
-- [Configuration](https://github.com/getgud-io/python-getgud-sdk#configuration)
-    - [Description of the Config fields](https://github.com/getgud-io/python-getgud-sdk#description-of-the-config-fields)
-- [Logging](https://github.com/getgud-io/python-getgud-sdk#logging)
+To start, we should understand the basic structure Getgud's SDK uses to understand an FPS: 
 
-## Downloads
+**Titles->1->N->Games->1->N->Matches->1->N->Actions**
 
-[Linux latest build](https://getgud-sdk-files.s3.amazonaws.com/0.1.0-Alpha-230531-b3ec5a8/Linux/libGetGudSdk.so) <br>
-[Windows latest build](https://getgud-sdk-files.s3.amazonaws.com/0.1.0-Alpha-230531-b3ec5a8/Linux/libGetGudSdk.so)
+* The top container in Getgud's SDK is `Title`, which represents a literal game’s title, you as a client can have many titles, for example, a `Title` named CS:GO represents the CS:GO video game.
+
+  ```
+  An example of a Title: CS:GO 
+  ```
+
+* Next up is `Game`, a `Game` is a container of matches that belong to the same `Title` from the same server session, where mostly the same players in the same teams, play one or more `Matches` together. You as a client can identify every game with a unique `gameGuid` that is provided to you once the `Game` starts. 
+
+  ```
+  An example of a Game is a CS:GO game which has 30 macthes (AKA rounds) inside it.
+  ```
+
+* `Match` represents the actual play time that is streamed for analysis.
+A `Match` is the containr of actions that occured in the match's timespan.
+Like `Game`, `Match` also has a GUID which will be provided to you once you start a new match.
+
+  ```
+  An example of a Match is a single CS:GO round inside the game.
+  ```
+
+* `Action` represents an in-match activity that is associated with a player. We collect six different action types which are common to all first person shooter gamnes:
+1. `Spwan` - Whenever a player appears or reappears in-match, on the map.
+2. `Death` - A death of a player.
+3. `Position` - player position change (including looking direction).
+4. `Attack` - Whenever a player initiates any action that might cause damage, now or in the future. Examples: shooting, throwning a granade, planting a bomb, swinging a sword, punching, firing a photon torpedo, etc.
+5. `Damage` - Whenever a player recieves any damage, from players or the environment.
+6. `Heal` - Whenever a player is healed.
+
 
 ## Getting Started
 
-To use our SDK in python you will have to build it for your system first. In order to do this just follow this simple steps.
+First, you need to build the SDK for your system. Follow these steps:
 
-1. If you do not have Python environment and start from scratch you can install Miniconda.
+1. Install Miniconda by executing the following commands:
 
-```bash
-wget https://repo.anaconda.com/miniconda/Miniconda3-py39_23.3.1-0-Linux-x86_64.sh
-bash Miniconda3-py39_23.3.1-0-Linux-x86_64.sh
-source miniconda3/bin/activate
-conda create -n getgudsdk python=3.9 anaconda
-conda activate getgudsdk
-pip install -r requirements.txt
-```
+   ```bash
+   wget https://repo.anaconda.com/miniconda/Miniconda3-py39_23.3.1-0-Linux-x86_64.sh
+   bash Miniconda3-py39_23.3.1-0-Linux-x86_64.sh
+   source miniconda3/bin/activate
+   conda create -n getgudsdk python=3.9 anaconda
+   conda activate getgudsdk
+   pip install -r requirements.txt
+   ```
 
-For windows to install Miniconda visit [this link](https://docs.conda.io/en/latest/miniconda.html)
-Now let's build the SDK!
+   For Windows, you can download Miniconda from [here](https://docs.conda.io/en/latest/miniconda.html).
 
-2. First download the latest Windows/Linux library build files from our S3 bucket
+2. Download the latest Windows or Linux library build files from GetGud's S3 bucket.
 
-3. Run the command in your terminal to build the library
-```bash
-invoke build-sdk
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/your/python-getgud-sdk
-```
+3. Run the following command in your terminal to build the library:
 
-On Windows add path to SDK .pyd file to PYTHONPATH
+   ```bash
+   invoke build-sdk
+   export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/your/python-getgud-sdk
+   ```
 
-4. Do not forget to set `LOG_FILE_PATH` and `CONFIG_PATH` environment variables to use SDK!
+   On Windows, add the path to the SDK .pyd file to PYTHONPATH.
 
-We have build the SDK an it is ready for use!
+4. Set the `LOG_FILE_PATH` and `CONFIG_PATH` environment variables to use the SDK.
 
-First, you will need to import `GetGudSdk` from the Python wrapper:
+Now let's get started with the SDK!
+
+To use the GetGud Python SDK, you need to import the `GetGudSdk` class and other necessary modules:
 
 ```python
 from getgudsdk_wrapper import GetGudSdk
@@ -63,13 +88,13 @@ Initialize the SDK:
 sdk = GetGudSdk()
 ```
 
-Next, start a Game:
+Start a Game:
 
 ```python
 game_guid = sdk.start_game(1, "private_key", "server_guid", "game_mode")
 ```
 
-Once the Game has started, you can start a Match using `game_guid`:
+Once the Game starts, you can start a Match:
 
 ```python
 match_guid = sdk.start_match(game_guid, "match_mode", "map_name")
@@ -89,7 +114,7 @@ initial_health = 100
 sdk.send_spawn_action(match_guid, action_time_epoch, player_guid, character_guid, team_id, initial_health, position, rotation)
 ```
 
-Let's also create one more match and push a report:
+Create one more match and push a report:
 
 ```python
 match_guid = sdk.start_match(game_guid, "deathmatch", "de-mirage")
@@ -105,11 +130,11 @@ suggested_toxicity_score = 100
 reported_time_epoch = int(time.time() * 1000)
 
 sdk.send_in_match_report(match_guid, reporter_name, reporter_type, reporter_sub_type, 
-                         suspected_player_guid, tb_type, tb_sub_type, 
-                         tb_time_epoch, suggested_toxicity_score, reported_time_epoch)
+                        suspected_player_guid, tb_type, tb_sub_type, 
+                        tb_time_epoch, suggested_toxicity_score, reported_time_epoch)
 ```
 
-It's time to stop the Game now. To do this, just specify which Game you need to stop, and all the Matches inside this Game will be stopped automatically:
+Stop the Game:
 
 ```python
 sdk.mark_end_game(game_guid)
@@ -123,7 +148,7 @@ sdk.dispose()
 
 ## Configuration
 
-The Config JSON file is loaded during `init()` operation using `CONFIG_PATH` env variable.
+The Config JSON file is loaded during initialization using the `CONFIG_PATH` environment variable.
 Example of configuration file `config.json`:
 
 ```json
@@ -132,95 +157,20 @@ Example of configuration file `config.json`:
   "updatePlayersURL": "http://44.204.78.198:3000/api/player_data/update_players",
   "sendReportsURL": "http://44.204.78.198:3000/api/report_data/send_reports",
   "throttleCheckUrl": "http://44.204.78.198:3000/api/game_stream/throttle_match_check",
-  "logToFile": true,
-  "logFileSizeInBytes": 2000000,
-  "circularLogFile": true,
-  "reportsMaxBufferSizeInBytes": 100000,
-  "maxReportsToSendAtOnce": 100,
-  "maxChatMessagesToSendAtOnce": 100,
-  "playersMaxBufferSizeInBytes": 100000,
-  "maxPlayerUpdatesToSendAtOnce": 100,
-  "gameSenderSleepIntervalMilliseconds": 100,
-  "apiTimeoutMilliseconds": 600,
-  "apiWaitTimeMilliseconds": 100,
-  "packetMaxSizeInBytes": 2000000,
-  "actionsBufferMaxSizeInBytes": 10000000,
-  "gameContainerMaxSizeInBytes": 50000000,
-  "maxGames": 25,
-  "maxMatchesPerGame": 10,
-  "minPacketSizeForSendingInBytes": 1000000,
-  "packetTimeoutInMilliseconds": 100000,
-  "gameCloseGraceAfterMarkEndInMilliseconds": 20000,
-  "liveGameTimeoutInMilliseconds": 100000,
-  "hyperModeFeatureEnabled": true,
-  "hyperModeMaxThreads": 10,
-  "hyperModeAtBufferPercentage": 10,
-  "hyperModeUpperPercentageBound": 90,
-  "hyperModeThreadCreationStaggerMilliseconds": 100,
   "logLevel": "FULL"
 }
 ```
 
-Please note that SDK will not start if `CONFIG_PATH` is not set.
-Make sure to adjust the values in the configuration file according to your application's requirements.
-
-### Description of the Config fields
-
-#### General API connection fields
-- `streamGameURL`: The link to Getgud API which will be used to send actions, chat, and reports for live matches.
-- `updatePlayersURL`: The link to Getgud API which will be used to send Player Update events to Getgud.
-- `sendReportsURL`: The link to Getgud API which will be used to send Reports for finished Matches.
-- `throttleCheckUrl`: The link to Getgud API which will be used to throttle check each match before sending its actions, reports, and chat to us. It is a way for Getgud to tell SDK if this match is interesting for it or not.
-- `logLevel`: Log level setting, in other words, how much you want to log into the log file. 
-  - `FULL`: Log everything
-  - `WARN_AND_ERROR`: Log all errors and warnings
-  - `_ERROR`: Log all errors
-  - `FATAL`: Log only fatal errors
-
-- `logToFile`: Weather SDK should write the logs to file or no
-- `logFileSizeInBytes`: Maximum log file size in bytes `(0, 100000000)` bytes
-- `circularLogFile`: In case this is set to true and the log file size exceeds the limit the SDK will start removing the first lines of the file to push more logs to the end of the log file
-
-#### Offline Report Sending fields
-- `reportsMaxBufferSizeInBytes`: Maximum size of the reports buffer in bytes for sending reports for finished matches. If the size of Report buffer fills too quickly all the next reports you send to us will be disregarded. `(0, 10000000)` bytes.
-- `maxReportsToSendAtOnce`: Maximum number of reports for offline matches that will be sent to Getgud at once. `(0, 100)` reports.
-
-#### Player Update fields
-- `playersMaxBufferSizeInBytes`: Maximum size of the player updates buffer in bytes for sending player updates. If the size of Player Update buffer fills too quickly all the next player updates you send to us will be disregarded. `(0, 10000000)` bytes.
-- `maxPlayerUpdatesToSendAtOnce`: Maximum number of player updates that will be sent to Getgud at once. `(0, 100)` reports.
-
-#### Chat messages
-- `maxChatMessagesToSendAtOnce`: Maximum amount of chat messages to send at once with game packet. `(0,100)` chat messages.
-
-
-#### Live Games and Matches fields
-- `gameSenderSleepIntervalMilliseconds`: Sleep time of every Game Sender. `(0, 5000)` milliseconds.
-- `apiTimeoutMilliseconds`: API timeout in milliseconds, the maximum time the data transfer is allowed to complete. `(0, 20000)` milliseconds.
-- `apiWaitTimeMilliseconds`: The SDK will be trying to send the game packet for this time frame. So it will do K attempts to send the packet, each attempt will have a timeout of `apiTimeoutMilliseconds`, and when it fails it will try to send again until the wait time is over. `(0, 20000)` milliseconds.
-- `packetMaxSizeInBytes`: Maximum size of a game packet in bytes to send to Getgud. `(0, 2000000)` bytes.
-- `actionsBufferMaxSizeInBytes`: Maximum size of the actions buffer in bytes. We use Action Buffer to transfer actions from GetGudSdk to one of the Game Senders. `(500, 100000000)` bytes.
-- `gameContainerMaxSizeInBytes`: Maximum size of the game container in bytes. We use Game Container to transfer metadata of Games and Matches to one of the Game Senders. `(500, 500000000)` bytes.
-- `maxGames`: Maximum number of live Games allowed at once. `(1, 100)` games.
-- `maxMatchesPerGame`: Maximum number of live Matches per live Game. `(1, 100)` matches.
-- `minPacketSizeForSendingInBytes`: Minimum size of a packet required for sending to Getgud in bytes. `(500, 1500000)` bytes.
-- `packetTimeoutInMilliseconds`: If a live Game is not getting any action in this time frame, the game packet to Getgud will be sent even though its size is less than `minPacketSizeForSendingInBytes`. `(500, 100000)` milliseconds.
-- `gameCloseGraceAfterMarkEndInMilliseconds`: Grace period in milliseconds after marking a game as ended before closing it. This is done to accumulate some actions which may still not be in the game packet. `(0, 200000)` milliseconds.
-- `liveGameTimeoutInMilliseconds`: If the live game didn't receive any actions for this time in milliseconds we will close it. `(0, 300000)` milliseconds.
-- `hyperModeFeatureEnabled`: Flag to enable or disable the hypermode feature. Hyper mode allows spawning more than 1 Game Sender thread in case the Action Buffer or Game Container becomes too large. `true, false`
-- `hyperModeMaxThreads`: Maximum number of threads allowed in hypermode. In other words how many Game Senders can we have active. `(1, 20)` threads.
-- `hyperModeAtBufferPercentage`: Percentage of buffer usage to trigger hypermode. If action buffer or game container usage is larger than this %, SDK will start spawning extra threads. `(10, 90)` %.
-- `hyperModeUpperPercentageBound`: Upper percentage bound for buffer usage in hypermode, at this % usage SDK will have `hyperModeMaxThreads` activated. `(30, 90)` %.
-- `hyperModeThreadCreationStaggerMilliseconds`: Time interval between the creation of consecutive threads (Game senders) in hypermode in milliseconds. `(0, 10000)` milliseconds.
+Please note that the SDK will not start if `CONFIG_PATH` is not set. Adjust the values in the configuration file according to your application's requirements.
 
 ## Logging
 
-SDK will log all its actions depending on what `logLevel` you set up in the config file. You should also set up env variable `LOG_FILE_PATH` with the path to the file where SDK will log data, otherwise, the logging will not work.
+The SDK logs its actions based on the `logLevel` setting in the configuration file. Logging will only work if the `LOG_FILE_PATH` environment variable is set.
 
-In order to control how you log use the following config parameters:
-```json
-"logToFile": true,
-"logFileSizeInBytes": 2000000,
-"circularLogFile": true,
-```
+To control logging, use the following configuration parameters:
 
-This will allow you to control how much you log and what to do if the log file exceeds the memory limit.
+- `logToFile`: true/false - Whether to log to a file or not.
+- `logFileSizeInBytes`: Maximum log file size in bytes (0-100000000).
+- `circularLogFile`: true/false - Whether to remove the first lines of the log file when it exceeds the size limit.
+
+Please make sure to set the `LOG_FILE_PATH` and `CONFIG_PATH` environment variables correctly to use logging.
