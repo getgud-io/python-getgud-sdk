@@ -7,6 +7,8 @@ Getgud Python SDK allows you to integrate your game with the GetGud platform. On
 - Send Reports about historical matches to GetGud.
 - Send (and update) player information to GetGud.
 
+  [CPP SDK Docs](https://github.com/getgud-io/cpp-getgud-sdk)
+
 ## Prerequisites
 
 To start, we should understand the basic structure Getgud's SDK uses to understand an FPS: 
