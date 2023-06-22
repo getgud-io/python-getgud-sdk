@@ -1,3 +1,13 @@
+#if defined(__cplusplus) && defined(_WIN32)
+#ifndef GETGUDSDK_EXPORTS
+#define GETGUDSDK_API __declspec(dllexport)
+#else
+#define GETGUDSDK_API __declspec(dllimport)
+#endif
+#else // not win32
+#define GETGUDSDK_API
+#endif
+
 enum Actions { None, Attack, Damage, Death, Heal, Position, Spawn };
 
 struct PositionF {
@@ -68,38 +78,130 @@ struct ReportInfo {
   char* suspectedPlayerGuid;
   int suspectedPlayerGuidSize;
   int tbType;
-  int tbSubType;
   long long tbTimeEpoch;
   int suggestedToxicityScore;
   long long reportedTimeEpoch;
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-int init();
-int StartGame(struct StartGameInfo gameInfo, char* gameGuidOut);
-int StartMatch(struct StartMatchInfo matchInfo, char* matchGuidOut);
-int MarkEndGame(char* gameGuid, int guidSize);
-int SendInMatchReport(struct ReportInfo reportInfo);
-int SendChatMessage(struct ChatMessageInfo messageInfo);
-int SendAttackAction(struct BaseActionData baseData,
+/**
+* Init:
+*
+* Init Getgud SDK
+**/
+GETGUDSDK_API int init();
+
+/**
+ * StartGame:
+ *
+ * Start new game
+ * Returns size
+ **/
+GETGUDSDK_API int StartGame(struct StartGameInfo gameInfo, char* gameGuidOut);
+
+/**
+ * Start match:
+ *
+ * Start a new match for an existing game
+ **/
+GETGUDSDK_API int StartMatch(struct StartMatchInfo matchInfo, char* matchGuidOut);
+
+/**
+ * MarkEndGame:
+ *
+ * Mark started game as finished
+ **/
+GETGUDSDK_API int MarkEndGame(char* gameGuid, int guidSize);
+
+/**
+ * SendAttackAction:
+ *
+ **/
+GETGUDSDK_API int SendAttackAction(struct BaseActionData baseData,
                      char* weaponGuid,
                      int weaponGuidSize);
-int SendDamageAction(struct BaseActionData baseData,
+
+/**
+ * SendDamageAction:
+ *
+ **/
+GETGUDSDK_API int SendDamageAction(struct BaseActionData baseData,
                      char* victimPlayerGuid,
                      int victimPlayerGuidSize,
                      float damageDone,
                      char* weaponGuid,
                      int weaponGuidSize);
-int SendHealAction(struct BaseActionData baseData, float healthGained);
-int SendSpawnAction(struct BaseActionData baseData,
+
+/**
+ * SendHealAction:
+ *
+ **/
+GETGUDSDK_API int SendHealAction(struct BaseActionData baseData, float healthGained);
+
+/**
+ * SendSpawnAction:
+ *
+ **/
+GETGUDSDK_API int SendSpawnAction(struct BaseActionData baseData,
                     char* characterGuid,
                     int characterGuidSize,
                     int teamId,
                     float initialHealth,
                     struct PositionF position,
                     struct RotationF rotation);
-int SendDeathAction(struct BaseActionData baseData);
-int SendPositionAction(struct BaseActionData baseData,
+
+/**
+ * SendDeathAction:
+ *
+ **/
+GETGUDSDK_API int SendDeathAction(struct BaseActionData baseData);
+
+/**
+ * SendPositionAction:
+ *
+ **/
+GETGUDSDK_API int SendPositionAction(struct BaseActionData baseData,
                        struct PositionF position,
                        struct RotationF rotation);
-void dispose();
+/**
+ * SendInMatchReport:
+ *
+ * Send a report which belongs to specifc match which is now live
+ **/
+GETGUDSDK_API int SendInMatchReport(struct ReportInfo reportInfo);
+
+/**
+ * SendChatMessage:
+ *
+ *  Send a message which belongs to specifc match which is now live
+ **/
+GETGUDSDK_API int SendChatMessage(struct ChatMessageInfo messageInfo);
+
+/**
+ * SendReport:
+ *
+ * Send report which are outside of the live match
+ **/
+GETGUDSDK_API int SendReport(int titleId,
+  char* privateKey, int privateKeySize, struct ReportInfo report);
+
+/**
+ * UpdatePlayer:
+ *
+ * Update player info outside of the live match
+ **/
+GETGUDSDK_API int UpdatePlayer(int titleId,
+  char* privateKey, int privateKeySize, struct PlayerInfo player);
+
+/**
+ * Dispose:
+ *
+ **/
+GETGUDSDK_API void dispose();
+
+#ifdef __cplusplus
+}
+#endif
