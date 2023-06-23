@@ -198,5 +198,67 @@ class GetGudSdk:
 
         return getgudsdk.SendPositionAction(base_data[0], position_struct[0], rotation_struct[0])
     
+    def send_report(self, title_id, private_key, match_guid, reporter_name, reporter_type, reporter_sub_type, 
+                         suspected_player_guid, tb_type, tb_sub_type, 
+                         tb_time_epoch, suggested_toxicity_score, reported_time_epoch):
+        
+        private_key_data = ffi.new("char[]", private_key.encode('utf-8'))
+        privateKeySize = len(private_key)
+        
+        report_info = ffi.new("struct ReportInfo*")
+        
+        match_guid_data = ffi.new("char[]", match_guid.encode('utf-8'))
+        report_info.matchGuid = match_guid_data
+        report_info.matchGuidSize = len(match_guid)
+
+        reporter_name_data = ffi.new("char[]", reporter_name.encode('utf-8'))
+        report_info.reporterName = reporter_name_data
+        report_info.reporterNameSize = len(reporter_name)
+
+        report_info.reporterType = reporter_type
+        report_info.reporterSubType = reporter_sub_type
+        
+        suspected_player_data = ffi.new("char[]", suspected_player_guid.encode('utf-8'))
+        report_info.suspectedPlayerGuid = suspected_player_data
+        report_info.suspectedPlayerGuidSize = len(suspected_player_guid)
+
+        report_info.tbType = tb_type
+        report_info.tbSubType = tb_sub_type
+        report_info.tbTimeEpoch = tb_time_epoch
+
+        report_info.suggestedToxicityScore = suggested_toxicity_score
+        report_info.reportedTimeEpoch = reported_time_epoch
+        
+        result_code = getgudsdk.SendReport(title_id, private_key_data, privateKeySize, report_info[0])
+
+        return result_code
+    
+    def update_player(self, title_id, private_key, player_guid, player_nickname, player_email,
+                        player_rank, player_join_date_epoch):
+        
+        private_key_data = ffi.new("char[]", private_key.encode('utf-8'))
+        privateKeySize = len(private_key)
+        
+        player_info = ffi.new("struct PlayerInfo*")
+        
+        player_guid_data = ffi.new("char[]", player_guid.encode('utf-8'))
+        player_info.playerGuid = player_guid_data
+        player_info.playerGuidSize = len(player_guid)
+
+        player_nickname_data = ffi.new("char[]", player_nickname.encode('utf-8'))
+        player_info.playerNickname = player_nickname_data
+        player_info.reporterNameSize = len(player_nickname)
+
+        player_email_data = ffi.new("char[]", player_email.encode('utf-8'))
+        player_info.playerEmail = player_email_data
+        player_info.playerEmailSize = len(player_email)
+
+        player_info.playerRank = player_rank
+        player_info.playerJoinDateEpoch = player_join_date_epoch
+        
+        result_code = getgudsdk.UpdatePlayer(title_id, private_key_data, privateKeySize, player_info[0])
+
+        return result_code
+    
     def dispose(self):
         getgudsdk.dispose()
