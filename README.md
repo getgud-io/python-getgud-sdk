@@ -3,14 +3,34 @@
 ## What Can You Do With GetGud's SDK
 
 Getgud Python SDK allows you to integrate your game with the GetGud platform. Once integrated, you will be able to:
-- Stream live Game data to GetGud's cloud (In-match Actions, In-match Reports, In-match Chat messages)
+- Stream live game data to GetGud's cloud, including in-match actions, in-match reports, and in-match chat messages.
 - Send Reports about historical matches to GetGud.
 - Send (and update) player information to GetGud.
+
+## Build requirements:
+The deployment folder contains everything needed to build and link the SDK into a Python project.
+However, for the Python version of the SDK, dependencies are hidden from the user:
+### Linux:
+Dependencies:
+- libcurl development kit.
+- zlib development kit.
+- openssl development kit.
+- libssl development kit.
+- libcrypto development kit.
+- g++ and gcc packages.
+- pthread library.
+
+### Windows:
+- libcurl library package.
+- zlib library package.
+
+Depending on the local machine's environment, some additional library linking might be required. 
+A test project with a complete setup is included in the root folder.
 
 ## Prerequisites
 
 For more context please check [CPP SDK Docs](https://github.com/getgud-io/cpp-getgud-sdk)
-To start, we should understand the basic structure Getgud's SDK uses to understand an FPS: 
+To start, we need to understand the basic structure GetGud's SDK uses for an FPS: 
 
 **Titles->1->N->Games->1->N->Matches->1->N->Actions**
 
@@ -27,7 +47,7 @@ To start, we should understand the basic structure Getgud's SDK uses to understa
   ```
 
 * `Match` represents the actual play time that is streamed for analysis.
-A `Match` is the containr of actions that occured in the match's timespan.
+A `Match` contains the actions that occurred during the match's timespan.
 Like `Game`, `Match` also has a GUID which will be provided to you once you start a new match.
 
   ```
@@ -206,16 +226,42 @@ Sends a report for a match.
 
 Parameters:
 - `match_guid` (str) - The unique identifier for the match.
-- `report_info` (dict) - The report information.
+- `reported_time_epoch` (int) - epoch time of when the report was created
+- `reporter_name` (str) - the name of the entity that created the report
+- `reporter_type` (int) - the type of the entity that created the report
+- `reporter_sub_type` (int) -   the subtype of the entity that created the report
+- `suggested_toxicity_score` (int) - 0-100 toxicity score, ie: how much do you suspect the player
+- `suspected_player_id` (int) - the player Id of the suspected player
+- `tb_type` (int) - id of the toxic behavior type, for example, Aimbot
+- `tb_time_epoch` (int) - epoch time of when the toxic behavior event occured
 
-### update_players
+### send_report
 
-Updates player information.
+Send report which are outside of the live match.
+
+Parameters:
+- `match_guid` (str) - The unique identifier for the match.
+- `reported_time_epoch` (int) - epoch time of when the report was created
+- `reporter_name` (str) - the name of the entity that created the report
+- `reporter_type` (int) - the type of the entity that created the report
+- `reporter_sub_type` (int) -   the subtype of the entity that created the report
+- `suggested_toxicity_score` (int) - 0-100 toxicity score, ie: how much do you suspect the player
+- `suspected_player_id` (int) - the player Id of the suspected player
+- `tb_type` (int) - id of the toxic behavior type, for example, Aimbot
+- `tb_time_epoch` (int) - epoch time of when the toxic behavior event occured
+
+### update_player
+
+Update player info outside of the live match.
 
 Parameters:
 - `title_id` (int) - The title ID provided by GetGud.io (optional if using environment variables).
 - `private_key` (str) - The private key associated with the title ID (optional if using environment variables).
-- `player_infos` (list) - A list of player information dictionaries to update.
+- `player_guid` (str) - Your player Id - String, 36 chars max.
+- `player_nickname` (str) - Nickname of the player.
+- `player_email` (str) - Email of the player.
+- `player_rank` (int) - Rank of the player.
+- `player_join_date_epoch` (int) - Date when the player joined.
 
 Returns:
 - `players_updated` (bool) - Whether the player information was successfully updated or not.
@@ -233,11 +279,36 @@ Example of configuration file `config.json`:
 
 ```json
 {
-  "streamGameURL": "http://44.204.78.198:3000/api/game_stream/send_game_packet",
-  "updatePlayersURL": "http://44.204.78.198:3000/api/player_data/update_players",
-  "sendReportsURL": "http://44.204.78.198:3000/api/report_data/send_reports",
-  "throttleCheckUrl": "http://44.204.78.198:3000/api/game_stream/throttle_match_check",
-  "logLevel": "FULL"
+  "throttleCheckUrl": "https://www.getgud.io/api/game_stream/throttle_match_check",
+  "streamGameURL": "https://www.getgud.io/api/game_stream/send_game_packet",
+  "updatePlayersURL": "https://www.getgud.io/api/player_data/update_players",
+  "sendReportsURL": "https://www.getgud.io/api/report_data/send_reports",
+  "logToFile": true,
+  "logFileSizeInBytes": 2000000,
+  "circularLogFile": true,
+  "reportsMaxBufferSizeInBytes": 100000,
+  "maxReportsToSendAtOnce": 100,
+  "maxChatMessagesToSendAtOnce": 100,
+  "playersMaxBufferSizeInBytes": 100000,
+  "maxPlayerUpdatesToSendAtOnce": 100,
+  "gameSenderSleepIntervalMilliseconds": 100,
+  "apiTimeoutMilliseconds": 600,
+  "apiWaitTimeMilliseconds": 100,
+  "packetMaxSizeInBytes": 2000000,
+  "actionsBufferMaxSizeInBytes": 10000000,
+  "gameContainerMaxSizeInBytes": 50000000,
+  "maxConcurrentGames": 100,
+  "maxMatchesPerGame": 30,
+  "minPacketSizeForSendingInBytes": 1000000,
+  "packetTimeoutInMilliseconds": 100000,
+  "gameCloseGraceAfterMarkEndInMilliseconds": 20000,
+  "liveGameTimeoutInMilliseconds": 100000,
+  "hyperModeFeatureEnabled": true,
+  "hyperModeMaxThreads": 10,
+  "hyperModeAtBufferPercentage": 10,
+  "hyperModeUpperPercentageBound": 90,
+  "hyperModeThreadCreationStaggerMilliseconds": 100,
+  "logLevel": "warn"
 }
 ```
 
