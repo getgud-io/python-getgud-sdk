@@ -51,7 +51,7 @@ class GetGudSdk:
         return getgudsdk.MarkEndGame(game_guid.encode('utf-8'), len(game_guid))
 
     def send_in_match_report(self, match_guid, reporter_name, reporter_type, reporter_sub_type, 
-                         suspected_player_guid, tb_type, tb_sub_type, 
+                         suspected_player_guid, tb_type, 
                          tb_time_epoch, suggested_toxicity_score, reported_time_epoch):
         report_info = ffi.new("struct ReportInfo*")
         
@@ -71,7 +71,6 @@ class GetGudSdk:
         report_info.suspectedPlayerGuidSize = len(suspected_player_guid)
 
         report_info.tbType = tb_type
-        report_info.tbSubType = tb_sub_type
         report_info.tbTimeEpoch = tb_time_epoch
 
         report_info.suggestedToxicityScore = suggested_toxicity_score
