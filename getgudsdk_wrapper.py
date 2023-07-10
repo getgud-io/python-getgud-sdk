@@ -199,7 +199,7 @@ class GetGudSdk:
         return getgudsdk.SendPositionAction(base_data[0], position_struct[0], rotation_struct[0])
     
     def send_report(self, title_id, private_key, match_guid, reporter_name, reporter_type, reporter_sub_type, 
-                         suspected_player_guid, tb_type, tb_sub_type, 
+                         suspected_player_guid, tb_type, 
                          tb_time_epoch, suggested_toxicity_score, reported_time_epoch):
         
         private_key_data = ffi.new("char[]", private_key.encode('utf-8'))
@@ -223,7 +223,6 @@ class GetGudSdk:
         report_info.suspectedPlayerGuidSize = len(suspected_player_guid)
 
         report_info.tbType = tb_type
-        report_info.tbSubType = tb_sub_type
         report_info.tbTimeEpoch = tb_time_epoch
 
         report_info.suggestedToxicityScore = suggested_toxicity_score
