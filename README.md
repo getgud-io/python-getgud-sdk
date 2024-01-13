@@ -85,6 +85,7 @@ First, you need to build the SDK for your system. Follow these steps:
 3. Run the following command in your terminal to build the library:
 
    ```bash
+   ln -s libGetGudSdk.so.0 libGetGudSdk.so
    invoke build-sdk
    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/your/python-getgud-sdk
    ```

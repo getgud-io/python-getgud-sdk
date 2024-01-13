@@ -1,15 +1,5 @@
-#if defined(__cplusplus) && defined(_WIN32)
-#ifndef GETGUDSDK_EXPORTS
-#define GETGUDSDK_API __declspec(dllexport)
-#else
-#define GETGUDSDK_API __declspec(dllimport)
-#endif
-#else // not win32
-#define GETGUDSDK_API
-#endif
-
 enum Actions { None = -1, Affect, Attack, Damage, Death, Heal, Position, Spawn };
-enum AffectState { Attach, Activate, Deactivate, Detach };
+typedef enum { Attach, Activate, Deactivate, Detach } AffectState;
 
 struct PositionF {
   float X;
@@ -118,16 +108,12 @@ struct ReportInfo {
   long long reportedTimeEpoch;
 };
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
 * Init:
 *
 * Init Getgud SDK
 **/
-GETGUDSDK_API int init();
+int init();
 
 /**
  * StartGame:
@@ -135,27 +121,27 @@ GETGUDSDK_API int init();
  * Start new game
  * Returns size
  **/
-GETGUDSDK_API int StartGame(struct StartGameInfo gameInfo, char* gameGuidOut);
+int StartGame(struct StartGameInfo gameInfo, char* gameGuidOut);
 
 /**
  * Start match:
  *
  * Start a new match for an existing game
  **/
-GETGUDSDK_API int StartMatch(struct StartMatchInfo matchInfo, char* matchGuidOut);
+int StartMatch(struct StartMatchInfo matchInfo, char* matchGuidOut);
 
 /**
  * MarkEndGame:
  *
  * Mark started game as finished
  **/
-GETGUDSDK_API int MarkEndGame(char* gameGuid, int guidSize);
+int MarkEndGame(char* gameGuid, int guidSize);
 
 /**
  * SendAffectAction:
  *
  **/
-GETGUDSDK_API int SendAffectAction(struct BaseActionData baseData,
+int SendAffectAction(struct BaseActionData baseData,
   char* affectGuid,
   int affectGuidSize,
   enum AffectState affectState);
@@ -164,7 +150,7 @@ GETGUDSDK_API int SendAffectAction(struct BaseActionData baseData,
  * SendAttackAction:
  *
  **/
-GETGUDSDK_API int SendAttackAction(struct BaseActionData baseData,
+int SendAttackAction(struct BaseActionData baseData,
                      char* weaponGuid,
                      int weaponGuidSize);
 
@@ -172,7 +158,7 @@ GETGUDSDK_API int SendAttackAction(struct BaseActionData baseData,
  * SendDamageAction:
  *
  **/
-GETGUDSDK_API int SendDamageAction(struct BaseActionData baseData,
+int SendDamageAction(struct BaseActionData baseData,
                      char* victimPlayerGuid,
                      int victimPlayerGuidSize,
                      float damageDone,
@@ -183,13 +169,13 @@ GETGUDSDK_API int SendDamageAction(struct BaseActionData baseData,
  * SendHealAction:
  *
  **/
-GETGUDSDK_API int SendHealAction(struct BaseActionData baseData, float healthGained);
+int SendHealAction(struct BaseActionData baseData, float healthGained);
 
 /**
  * SendSpawnAction:
  *
  **/
-GETGUDSDK_API int SendSpawnAction(struct BaseActionData baseData,
+int SendSpawnAction(struct BaseActionData baseData,
                     char* characterGuid,
                     int characterGuidSize,
                     int teamId,
@@ -209,7 +195,7 @@ GETGUDSDK_API int SendDeathAction(struct BaseActionData baseData,
  * SendPositionAction:
  *
  **/
-GETGUDSDK_API int SendPositionAction(struct BaseActionData baseData,
+int SendPositionAction(struct BaseActionData baseData,
                        struct PositionF position,
                        struct RotationF rotation);
 /**
@@ -217,21 +203,21 @@ GETGUDSDK_API int SendPositionAction(struct BaseActionData baseData,
  *
  * Send a report which belongs to specifc match which is now live
  **/
-GETGUDSDK_API int SendInMatchReport(struct ReportInfo reportInfo);
+int SendInMatchReport(struct ReportInfo reportInfo);
 
 /**
  * SendChatMessage:
  *
  *  Send a message which belongs to specifc match which is now live
  **/
-GETGUDSDK_API int SendChatMessage(struct ChatMessageInfo messageInfo);
+int SendChatMessage(struct ChatMessageInfo messageInfo);
 
 /**
  * SendReport:
  *
  * Send report which are outside of the live match
  **/
-GETGUDSDK_API int SendReport(int titleId,
+int SendReport(int titleId,
   char* privateKey, int privateKeySize, struct ReportInfo report);
 
 /**
@@ -239,15 +225,12 @@ GETGUDSDK_API int SendReport(int titleId,
  *
  * Update player info outside of the live match
  **/
-GETGUDSDK_API int UpdatePlayer(int titleId,
+int UpdatePlayer(int titleId,
   char* privateKey, int privateKeySize, struct PlayerInfo player);
 
 /**
  * Dispose:
  *
  **/
-GETGUDSDK_API void dispose();
+void dispose();
 
-#ifdef __cplusplus
-}
-#endif

@@ -15,7 +15,8 @@ def build_sdk(c):
         "getgudsdk",
         '#include "GetGudSdk_C.h"',
         # libraries=[":libGetGudSdk.so", "stdc++", "crypto", "ssl", ":libz.so"], # Linux
-        libraries=["GetGudSdk"], # Windows
+        libraries=[":libGetGudSdk.so"], # Linux
+        # libraries=["GetGudSdk"], # Windows
         library_dirs=[this_dir.as_posix()],
         extra_link_args=["-Wl,-rpath,."],
     )

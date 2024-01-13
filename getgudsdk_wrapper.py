@@ -51,7 +51,7 @@ class GetGudSdk:
         return getgudsdk.MarkEndGame(game_guid.encode('utf-8'), len(game_guid))
 
     def send_in_match_report(self, match_guid, reporter_name, reporter_type, reporter_sub_type, 
-                         suspected_player_guid, tb_type, tb_sub_type, 
+                         suspected_player_guid, tb_type, 
                          tb_time_epoch, suggested_toxicity_score, reported_time_epoch):
         report_info = ffi.new("struct ReportInfo*")
         
@@ -71,7 +71,6 @@ class GetGudSdk:
         report_info.suspectedPlayerGuidSize = len(suspected_player_guid)
 
         report_info.tbType = tb_type
-        report_info.tbSubType = tb_sub_type
         report_info.tbTimeEpoch = tb_time_epoch
 
         report_info.suggestedToxicityScore = suggested_toxicity_score
@@ -164,7 +163,7 @@ class GetGudSdk:
         character_guid_size = len(character_guid)
 
         position_struct = ffi.new("struct PositionF*", {"X": position[0], "Y": position[1], "Z": position[2]})
-        rotation_struct = ffi.new("struct RotationF*", {"Pitch": rotation[0], "Roll": rotation[1]})
+        rotation_struct = ffi.new("struct RotationF*", {"Yaw": rotation[0], "Pitch": rotation[1], "Roll": rotation[2]})
 
         return getgudsdk.SendSpawnAction(base_data[0], character_guid_data, character_guid_size,
                                         team_id, initial_health, position_struct[0], rotation_struct[0])
@@ -194,12 +193,12 @@ class GetGudSdk:
         base_data.playerGuidSize = len(player_guid)
 
         position_struct = ffi.new("struct PositionF*", {"X": position[0], "Y": position[1], "Z": position[2]})
-        rotation_struct = ffi.new("struct RotationF*", {"Yaw": rotation[0], "Pitch": rotation[1]})
+        rotation_struct = ffi.new("struct RotationF*", {"Yaw": rotation[0], "Pitch": rotation[1], "Roll": rotation[2]})
 
         return getgudsdk.SendPositionAction(base_data[0], position_struct[0], rotation_struct[0])
     
     def send_report(self, title_id, private_key, match_guid, reporter_name, reporter_type, reporter_sub_type, 
-                         suspected_player_guid, tb_type, tb_sub_type, 
+                         suspected_player_guid, tb_type, 
                          tb_time_epoch, suggested_toxicity_score, reported_time_epoch):
         
         private_key_data = ffi.new("char[]", private_key.encode('utf-8'))
@@ -223,7 +222,6 @@ class GetGudSdk:
         report_info.suspectedPlayerGuidSize = len(suspected_player_guid)
 
         report_info.tbType = tb_type
-        report_info.tbSubType = tb_sub_type
         report_info.tbTimeEpoch = tb_time_epoch
 
         report_info.suggestedToxicityScore = suggested_toxicity_score
