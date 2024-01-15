@@ -73,7 +73,7 @@ First, you need to build the SDK for your system. Follow these steps:
    wget https://repo.anaconda.com/miniconda/Miniconda3-py39_23.3.1-0-Linux-x86_64.sh
    bash Miniconda3-py39_23.3.1-0-Linux-x86_64.sh
    source miniconda3/bin/activate
-   conda create -n getgudsdk python=3.9 anaconda
+   conda create -n getgudsdk python=3.11 anaconda
    conda activate getgudsdk
    pip install -r requirements.txt
    ```
