@@ -187,7 +187,7 @@ int SendSpawnAction(struct BaseActionData baseData,
  * SendDeathAction:
  *
  **/
-GETGUDSDK_API int SendDeathAction(struct BaseActionData baseData,
+int SendDeathAction(struct BaseActionData baseData,
                                   char* attackerGuid,
                                   int attackerGuidSize);
 
