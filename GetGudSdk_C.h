@@ -1,5 +1,5 @@
 enum Actions { None = -1, Affect, Attack, Damage, Death, Heal, Position, Spawn };
-typedef enum { Attach, Activate, Deactivate, Detach } AffectState;
+enum AffectState { Attach, Activate, Deactivate, Detach };
 
 struct PositionF {
   float X;
